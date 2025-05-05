@@ -1,0 +1,17 @@
+# --extra-index-url=${PIP_EXTRA_INDEX_URL}
+
+# api
+flask == 1.0.2
+
+# local regression_model package
+# update with your local path
+- e "C:\Udemy_Course\Deploy_ML_Models\deploying-machine-learning-models-master\packages\regression_model\regression_model"
+# schema validation
+# marshmallow==2.17.0
+
+# Install from gemfury
+# regression-model==2.0.20
+# neural_network_model==0.1.1
+
+# Deployment
+# gunicorn==19.9.0
