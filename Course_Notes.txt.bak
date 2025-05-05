@@ -1791,7 +1791,7 @@ C:\>aws iam list-users
         {
             "Path": "/",
             "UserName": "ecs-admin-user",
-            "UserId": "XXXXXXXXXXXXXXXX",
+            "UserId": "AIDA2USXTWGQMGC4T72YA",
             "Arn": "arn:aws:iam::731401925024:user/ecs-admin-user",
             "CreateDate": "2025-04-08T10:45:32Z"
         }
