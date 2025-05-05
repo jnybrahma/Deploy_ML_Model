@@ -1,0 +1,2227 @@
+---------------------------------------- Deployment of Machine Learning Models -------------------
+
+
+%----------------------------- Section 1: Introduction -------------------------------%
+
+# Go to Anaconda Powershell Command Prompt and open below;
+# Optional: First To install correct version of python 
+ 
+(base) PS D:\Django_and_Python\djangoEnv> conda create --name MLModelEnv python=3.10
+(base) PS D:\Django_and_Python\djangoEnv> conda activate MLModelEnv
+(MLModelEnv) D:\Django_and_Python\djangoEnv> conda deactivate MLModelEnv
+
+# To find the list of conda environment
+(base) PS D:\Django_and_Python\djangoEnv> conda info --envs
+
+(base) PS C:\WINDOWS\system32> conda env list
+# conda environments:
+#
+                         C:\Users\Owner\Anaconda3
+base                  *  C:\Users\Owner\anaconda3
+DjangoPrjectEnv          C:\Users\Owner\anaconda3\envs\DjangoPrjectEnv
+TensorFlowEnv            C:\Users\Owner\anaconda3\envs\TensorFlowEnv
+dbtEnv                   C:\Users\Owner\anaconda3\envs\dbtEnv
+intro-to-mongodb         C:\Users\Owner\anaconda3\envs\intro-to-mongodb
+myDjangoEnv              C:\Users\Owner\anaconda3\envs\myDjangoEnv
+quantum_compute          C:\Users\Owner\anaconda3\envs\quantum_compute
+
+
+(base) PS C:\WINDOWS\system32> conda create --name apacheSpark-env python=3.10
+
+(base) PS C:\WINDOWS\system32> conda create --name apacheSpark-env python=3.10
+#
+# To activate this environment, use
+#
+#     $ conda activate apacheSpark-env
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+(base) PS C:\WINDOWS\system32> conda activate apacheSpark-env
+(apacheSpark-env) PS C:\WINDOWS\system32>
+(apacheSpark-env) PS D:\Data_Engineering\PySpark\projects> pip install pyspark
+(apacheSpark-env) PS D:\Data_Engineering\PySpark\projects> pip install findspark
+(apacheSpark-env) PS D:\Data_Engineering\PySpark\projects> pip install jupyterlab
+
+## Install pyspark, JupyterLab;
+
+
+(.pyspark-env) D:\Data_Engineering\PySpark> pip install pyspark
+
+(.pyspark-env) D:\Data_Engineering\PySpark> pip install findspark
+
+(.pyspark-env) D:\Data_Engineering\PySpark> pip install jupyterlab
+
+ 
+## Launch JupyterLab and use PySpark;
+
+(apacheSpark-env) PS D:\Data_Engineering\PySpark\projects> jupyter-lab
+
+http://localhost:8888/lab
+----------------------------------------------------------------------------
+
+PS C:\Udemy_Course\Deploy_ML_Models\Projects\deployModel> py -3.9 -m venv MLModelEnv
+
+PS C:\Udemy_Course\Deploy_ML_Models\Projects\deployModel\MLModelEnv\scripts> activate
+
+
+------------------------------------------ ML ------------------------
+
+## Machine Learning Models
+-  Linear Regression
+- Tree Based Algorithms
+
+## Model evaluation
+- Mean Squared error
+- R^2
+- ROC-AUC
+
+## Feature Engineering & Selection
+
+----------------------------------------------------------------------
+
+
+https://www.kaggle.com/
+
+## Course Materials;
+
+https://github.com/trainindata/deploying-machine-learning-models
+
+Fork the repo
+
+
+Navigate to the repo in your browser
+
+Click on the button in the top right corner that says "fork" (see image below)
+
+Done
+
+This will create a copy of this repository in your Github account.
+
+Cloning the "forked" repo
+
+You can clone the "forked" repo, which is now located in your Github account, from the mac terminal or windows command line interface 
+with this command:
+
+git clone https://github.com/<YOUR_USERNAME>/deploying-machine-learning-models
+
+------------------------------------------------------------------------------------------------------
+
+https://www.kaggle.com/
+
+Download Dataset
+Download House Prices data set from Kaggle
+
+
+Create a Kaggle account
+
+If you have a Kaggle account already, go straight to Download data set.
+
+Visit Kaggle's website
+
+Click on the "Create an account" button and follow the instructions to set up your account
+
+Download data set
+
+Visit the House Sale Price competition website, scroll down and click on train.csv and test.csv files (see image below) 
+and then on the download button on the right.
+
+Store the datasets somewhere safe, and we will tell you were to move them as we go along in the course.
+
+https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data
+
+
+
+%----------------------------- Section 2: Overview of Model Deployment -------------------------------%
+
+- The deployment of ML models is the process of making models available in production environments, 
+- where they can provide predictions to other softwares systems.
+- To Maximize the values of the machine learning model, we need to be able to reliably extract the predictions and share them with other systems.
+
+
+## Challenges of traditional software;
+- Reliablity
+- Reusability
+- Maintainability
+- Flexibility
+- Reproducibility
+
+## Deployment of ML Pipelines;
+- Data Format and Quality
+- Transform Variables
+- Extract Features
+- Create New Features
+
+## Research and Production Environment;
+
+
+## Building Reproducible Machine Learning Pipelines;
+
+- Financial Costs
+- Lost time
+- Lost Reputation
+
+## Challenges to Reproducibility;
+- Reproducibility is the ability to duplicate a machine learning model exactly , such that given the same raw data as input,
+- both models return the same output.
+
+=> Data Gathering => Data Analysis => Data pre-processing => Variable selection => ML Model Building => Model Deployment
+
+- Data => The most difficult challenge to reproducibility.
+## Challenges
+- Training datasets can't be reproduced
+- Databases are constantly updated and overwritten.
+- Order of data while loading is random (SQL).
+
+## Solution;
+- Save snapshot of training data.
+- Design data source with accurate timestamps.
+
+## Reproducibility during feature creation;
+
+=> Lack of reproducibility may arise from:
+- Replacing missing data with random extracted values.
+- Removing labels based on percentages of observations.
+- Calculating statistical values like the mean to use for missing value replacement.
+- More complex equations to extract features , e.g. aggregating over time.
+
+=> How to ensure reproducibility?
+- Code on how feature is generated should be tracked under version control and published with auto-incremented or timestamps hashed versions.
+- Many of the parameters extracted for feature engineering depend on the data used for training -> ensure data is reproducible.
+- If replacing by extracting random samples, always set a seed.
+
+## Reproducibility during Model Training;
+=> Challenges;
+- Machine learning models rely on randomness for training;
+ * Data and feature extraction for trees.
+ * Weight initialisation for neural nets, etc.
+
+- Machine learning model implementations work with arrays agnostic to feature names
+ * Need to be careful to feed data in the correct order
+ 
+=> Solutions;
+- Record the order of the features
+- Record applied feature transformations
+- Record hyperparameters
+- For models that require randomness always set a seed.
+- If the final model is a stack of models, record the structure of the ensemble.
+
+
+## Reproducibility during Model Deployment;
+=> Challenges:
+- A feature is not available in the live environment
+- Different programming languages
+- Different software
+- Live populations don't match those used for training.
+
+=> Solutions:
+- Software version should match exactly applications should list all third party library dependencies and their versions.
+- Use a container and track software specifications.
+- Research, develop and deploy utilising the same language , e.g python
+- Prior to building the model, understand how the model will be integrated with other systems.
+
+
+## Streamlining Model Deployment with Open Source.
+=> Challenges
+- A lot to code
+- Repetitive
+- Learn and store parameters
+- Reproducibility
+
+## Additional Reading Resources
+=> Building Reproducible Pipelines
+
+- Building and Deploying a Reproducible Machine Learning Pipeline - article
+
+https://trainindata.medium.com/how-to-build-and-deploy-a-reproducible-machine-learning-pipeline-20119c0ab941
+
+- Building a Reproducible Machine Learning Pipeline - long article
+https://www.rctatman.com/files/Tatman_2018_ReproducibleML.pdf
+https://arxiv.org/ftp/arxiv/papers/1810/1810.04570.pdf
+
+- Reproducible Machine Learning - presentation, Kaggle
+
+https://www.rctatman.com/files/Tatman_2018_ReproducibleML.pdf
+
+
+- The Machine Learning Reproducibility Crisis - article, by Google developer
+
+
+=> Streamlining Deployment with Open Source
+- Six motivations for using open source - article
+
+%----------------------------- Section 3: Machine Learning System Architecture -------------------------------%
+
+## Why it matters?
+- ML in production requires multiple different components in order to work:
+	> Infrastructure
+	> Applications
+	> Data
+	> Documentation
+	> Configuration
+
+
+## Specific Challenges Machine Learning System;
+- Data Dependencies;
+>> Models may be trained on data from many different sources e.g. a house price prediction model which takes data from:
+	* An in-house SQL database with information on recent inquires.
+	* A second in-house NoSQL data store which contains historical house listings.
+	* An external API with the latest crime statistics
+	* A base-line of features CSV prepared by a data scientist and updated on weekly basis.
+
+- Configuration Issues;
+>> Model hyperparameters, versions, requirements , data sources can all be changed and modified via config.
+>> e.g. a yaml file in your source code. Is this tested?
+
+- Data and Feature Preparation
+>> The steps required to prepare data and transform it into features for the model may be complex. e.g. a typical pipeline requires us to;
+	* Transform numerical data
+	* Transform categorical data
+	* Handle outliners
+	* Derive features from raw data
+	* Many other tasks.
+
+- Detecting Model Errors;
+>> Traditional test often do not detect errors in ML systems
+>> When you deploy a model which performs worse, no exceptions are raised. 
+>> Your API will not return any 500 status codes. Standard tests will not catch these sorts of mistakes.
+
+- Key points for Research vs Production Environments;
+>> Seperate from customer facing software
+>> Reproducibility matters
+>> Scaling challenges
+>> Can be taken offline
+>> Infrastructure planning required
+>> Difficult to run experiments
+
+
+## Key Principles for Machine Learning;
+
+Model Requirements => Data Collection => Data Cleaning => Data Labelling => Feature Engineering => Model Training => Model Evaluation => Model Deployment => Model Monitoring.
+- Automation of all stages of the ML workflow.
+
+> Reproducibility;
+ - Training is reproducible.
+ - Every model specification undergoes a code review and is checked into a repository.
+ - Models can be quickly and safely rolled back to a previous serving version.
+ 
+> Versioning;
+ - Each model is tagged with a provenance tag that explains with which data it has been trained on and which version of the model.
+ - Each dataset is tagged with information about where it originated from and which version of the code was used to extract it( and ny related features).
+ 
+> Testing;
+ - The full Machine Learning  pipeline is integration tested.
+ - All input feature code is tested.
+ - Model specification code is unit tested.
+ - Model quality is validated before attempted to serve it.
+
+> Infrastructure;
+ - Models are tested via a shadow and /or canary process before they enter production serving environments.
+ - Monitor the model performance.
+
+> Run Through the Checklist;
+ - It's also useful to observe the links and dependencies across different best practices:
+ * Without model specification review and version control, it would be hard for reproducible training.
+ * Without reproducible training , the effectiveness and predictability of canary release are significanlty reduced.
+ * Without knowing the impact of model staleness, it's hard to implement effective monitoring.
+
+
+## Machine Learning System Architecture Approach;
+
+1. Model embedded in application.
+2. Served via a dedicated service.
+3. Model published as data (streaming)
+4. Batch prediction (offline process)
+
+>> Serving ML Models - Formats
+- Serializing the model object with pickle.
+- MLFlow (MLeap module) provides a common serialization format for exporting/importing Spark, Scikit-learn and TensorFlow Models.
+- Language-agnostic exhange formats to share models, such as PMML, PFA, and ONNX.
+
+>> Architecture 1: Embedded
+- Pre-Trained: Yes
+- Predict-on-the-fly: Yes
+- Variations : Embedded on mobile device (e.g. Core ML) , running in the browser (TensorFlow.js)
+
+>> Architecture 2: Dedicated Model API
+- Pre-Trained: Yes
+- Predict-on-the-fly: Yes
+- Variations : Many
+
+
+>> Architecture 3: Model Published as Data
+- Pre-Trained: Yes
+- Predict-on-the-fly: Yes
+- Variations : Different publish/subscribe patterns
+
+
+>> Architecture 4: Offline Predictions;
+- Pre-Trained: Yes
+- Predict-on-the-fly: No
+- Variations : Serve predictions via API, CSV, dashboards.
+
+>> Key points for Architecture Comparison;
+- Prediction
+- Prediction result delivery
+- Latency for prediction
+- System Management Difficulty
+- Model update requires deployment?
+
+
+## Machine Learning System Component Breakdown;
+
+- ML model as embedded dependency, predict on the fly.
+
+>> High Level Architecture;
+	- Evaluation Layer:
+		* The evaluation layer checks the equivalence of two models. This layer can be used to monitor production models e.g., to
+		* to check how closely the predictions on live traffic matches the training predictions.
+	- Scoring Layer:
+		* The scoring layer transforms feature into predictions. Scikit-learn is the industry standard for this layer. 
+		* Other libraries share the functionality, like Xgboost and Keras for Neural networks.
+	- Feature Layer:
+		* The feature layer is responsible for generating feature data in a transparent, reusable , and scalable manner.
+	- Data Layer:
+		* The data layer provides access to all of our data sources which simplifies the challenge of data reproducibility.
+
+>> Additional Reading Resources
+
+- Specific Challenges to Machine Learning
+	* Paper referenced in the lecture:
+
+- Hidden technical debt in machine learning systems - Google
+https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf
+
+- Monitoring ML models;
+https://christophergs.com/machine%20learning/2020/03/14/how-to-monitor-machine-learning-models/
+
+
+
+>> Principle for Machine Learning Systems
+The Google + Microsoft papers referenced in the lecture:
+
+"The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction" (2017) Breck et al. 
+IEEE International Conference on Big Data (Google). Download URL
+
+"Software Engineering for Machine Learning: A Case Study" (2019) Amershi et al. (Microsoft). Download URL.
+
+- Shadow Deployments.
+https://christophergs.com/machine%20learning/2019/03/30/deploying-machine-learning-applications-in-shadow-mode/
+
+- Monitoring ML models
+https://christophergs.com/machine%20learning/2020/03/14/how-to-monitor-machine-learning-models/
+
+
+>> Machine Learning Systems Architecture Approaches
+Pickle challenges:
+
+As per the Scikit-learn docs:
+
+“Since a model internal representation may be different on two different architectures,
+
+dumping a model on one architecture and loading it on another architecture is not
+
+supported.”
+
+Video, on the risks of the pickle format.
+
+https://www.youtube.com/watch?v=7KnfGDajDQw
+
+Architectures used in Different Organizations
+Advanced architecture discussions from larger companies:
+
+- Introducing FBLearner Flow: Facebook’s AI backbone
+https://engineering.fb.com/2016/05/09/core-infra/introducing-fblearner-flow-facebook-s-ai-backbone/
+
+- Scaling Machine Learning as a service: Uber’s pipeline
+https://proceedings.mlr.press/v67/li17a/li17a.pdf
+
+- Netflix on architecture for recommendation systems
+https://netflixtechblog.com/system-architectures-for-personalization-and-recommendation-e081aa94b5d8
+
+- Google’s TFX Paper
+
+- Uber’s (very complex!) Michelangelo System
+https://www.uber.com/blog/michelangelo/
+
+
+>> Additional Reading Resources
+- A systems perspective to reproducibility in Production Machine Learning
+
+https://openreview.net/pdf?id=Byl4vavigX
+
+
+>> The below resources are on more advanced topics that we will not be covering in the course
+
+>> Google’s Site Reliability Engineering is one of the best references out there, it’s available for free here.
+https://sre.google/sre-book/table-of-contents/
+
+>> Martin Fowler’s testing guide is pretty comprehensive. If you are new to testing this may be overwhelming.
+https://www.martinfowler.com/testing/
+
+>> Obey the Testing Goat by Harry Percival is a good applied introduction to Test Driven Development (TDD).
+https://www.obeythetestinggoat.com/
+
+>> Advanced, narrow vs. broad integration tests.
+
+https://martinfowler.com/bliki/IntegrationTest.html
+
+
+%----------------------------- Section 4: Research Environment - Developing Machine Learning Model -------------------------------%
+## Research Environment;
+> Data Gathering
+> Feature engineering & selection
+> Model Building & Assessment
+
+- Machine Learning Pipeline;
+
+=> Database, Cloud , APIs ==> Feature Engineering, Selection, ==> Building Model ==> Scoring ==> Prediction
+
+
+## Process Overview;
+
+=> [Database, Cloud , APIs] ==> [Feature Engineering, Selection] ==> [Building Model] ==> [Scoring] ==> [Prediction]
+
+## Machine Learning Pipeline Overview;
+
+=> [Gathering Data Sources] => [Data Pre-Processing] => [Variable Selection] => [Machine Learning Model Building] => [Probability , Continues Output]
+
+## Feature Engineering - Variable Characteristic (Transformations);
+
+- Missing data (Missing values within a variable)
+- Distribution (Normal vs skewed)
+- Labels (Strings in categorical variables)
+- Outliners (Unusual or unexpected values)
+
+- Machine Learning models sensitive to feature scale:
+	* Linear and Logistic Regression
+	* Neural Network
+	* Support Vector Machines
+	* KNN
+	* K-means clustering
+	* Linear Discriminant Analysis(LDA)
+	* Principal Component Analysis (PCA)
+
+- Tree Based ML models insensitive to feature scale:
+	* Classification and Regression Trees
+	* Random Forests
+	* Gradient Boosted Trees
+
+## Feature Engineering  Techniques;
+
+* Transform Variables
+* Extract Features
+* Create New Features
+
+- Missing Data 
+	* Scikit-learn and other libraries can't work with missing data.
+
+- Missing Data Imputation Techniques:
+	* Numerical Variables - Mean/Median Imputation, Arbitary value  imputation, End of tail imputation.
+	* Categorical Variables - Frequent category imputation, Adding "missing" category.
+	* Both - Complete Case Analysis, Adding a "Missing" indicator, Random sample imputation.
+
+- Categorical Encoding Techniques
+	* Traditional techniques - [one hot encoding],[count/frequency encoding],[Ordinal/Label encoding]
+	* Monotonic relationship - [Ordered label encoding],[Mean Encoding],[Weight of evidence]
+	* Alternative techniques - [Binary encoding],[Feature hashing],[Others]
+
+-  Encoding Techniques: Rare labels (Particularly important for model deployment)
+	* Infrequent labels
+	* Group - One hot encoding of frequent categories, Grouping of rare categories.
+
+- Mathematical Transformation - [Skewed] ==> [Gaussian]
+	* Variable Transformation
+	* Logarithmic
+	* Exponential
+	* Reciprocal
+	* Box-Cox
+	* Yeo-Johnson
+
+- Discretisation: [Skewed] => [Improved value spread]
+	* Unsupervised - [Equal-width],[Equal frequency],[K means]
+	* Supervised - [Decision Trees]
+
+- Outliers
+	* Discretisation
+	* Capping/Censoring
+	* Truncation
+	
+- Feature scaling methods;
+	* standardisation
+	* Mean normalisation
+	* Scaling to Maximum and minimum
+	* Scaling to absolute maximum
+	* Scaling to median and quantiles
+	* Scaling to unit norm
+
+
+## Feature Selection;
+>> Why do we select features?
+	- Simple models are easier to interpret
+	- Shorter training times
+	- Enhanced generalisation by reducing overfitting
+	- Easier to implement by software developers -> Model production
+	- Reduced risk of data errors during model use
+	- Data redundancy
+
+>> Reducing features for model deployment
+	- Smaller json messages sent over to the model
+		* Json message contain only the necessary variables/inputs
+	- Less lines of code for error handling
+		* Error handlers need to be written for each variable/input
+	- Less information to log
+	- Less feature engineering code.
+
+>> Variable Redundancy;
+	- Constant variables - Only 1 value per variable
+	- Quasi - constant Variables - > 99% of observations show same value
+	- Duplication - Same variable multiple times in the dataset
+	- Correlation - Correlated variables provide the same information.
+	
+>> Feature Selection Methods;
+	- Embedded methods
+	- Wrapper methods
+	- Filter methods
+
+>> Filter Methods;
+	- Independent of Machine Learning algorithm
+	- Based only on variable characteristics
+
+>> Wrapper Methods;
+	- Considers Machine Learning algorithm
+	- Evaluates subsets of features
+
+>> Embedded methods:
+	- Feature selection during training of ML algorithm.
+
+
+## Training Machine Learning  Model;
+
+>> Machine learning model - Performance
+	- ROC-AUC
+		* For each probility value:
+		- How many times the model made a good assessment
+		- How many times the model made a wrong assessment
+	- Accuracy
+	- MSE, RMSE, etc.
+	
+>> Model Stacking - Meta Ensembling;
+
+	[Logit] => Prob |
+	[ RF  ] => Prob |
+	[ GBT ] => Prob | => [Meta Model] ==> [Prediction]
+	[ NN  ] => Prob |
+	[MARS ] => Prob |
+
+
+
+## Research Environment;
+- Research environment - second part
+- We are entering into the second part of this section, 
+- where we will build a machine learning pipeline to predict house price, using Python.
+
+>> Code covered in this section
+- The code for this section can be found in the "section 4" folder of our repo. See image below.
+
+https://github.com/trainindata/deploying-machine-learning-models/tree/master/section-04-research-and-development
+
+
+Python library versions;
+
+These are the versions of the libraries we use in this section:
+
+(base) C:\Users\User> conda create --name MLDeploymentEnv python=3.9
+(base) C:\Users\User> conda activate MLDeploymentEnv
+(MLDeploymentEnv) C:\Users\User> pip install jupyterlab
+(MLDeploymentEnv) C:\Users\User> conda deactivate MLDeploymentEnv
+
+
+
+python==3.9
+
+feature-engine==1.0.2
+joblib==1.0.1
+scikit-learn==0.24.1
+scipy==1.6.0
+seaborn==0.10.1
+statsmodels==0.12.2
+matplotlib==3.3.4
+numpy==1.20.1
+pandas==1.2.2
+
+
+- Newer or older versions of the libraries may break the code. 
+- So if you have trouble running the code, check the version of the libraries you have installed.
+
+
+(MLDeploymentEnv) C:\Users\User> jupyter-lab 
+(MLDeploymentEnv) C:\Users\User> jupyter-lab --notebook-dir=C:/
+
+http://localhost:8888/lab
+
+
+
+We will cover how to create environments and install specific dependencies in Section 5.
+
+
+
+## Data analysis demo - missing data
+
+https://github.com/trainindata/deploying-machine-learning-models/blob/master/section-04-research-and-development/01-machine-learning-pipeline-data-analysis.ipynb
+
+>> 1.1 Predicting Sale Price of Houses;
+>> Analysis-
+		# We will analysis following:
+		1. The target variable
+		2. Variable types (categorical and numerical)
+		3. Missing data
+		4. Numerical variables
+			* Discrete
+			* Continuous
+			* Distributions
+			* Transformations
+		5. Categorical variables
+			* Cardinality
+			* Rare Labels
+			* Special mappings
+		6. Additional Reading Resources
+		
+>> 2.2 Target
+    # Histogram to evaluate target distribution
+	- We can see that the target is continuous , and the distribution is skewed towards the right.
+	- We can improve the value spread with mathematical transformation.
+	- Now the distribution looks more Gaussian.
+	
+>> 2.3 Variable Types
+	# Let's Identify the categorical and numerical variables.
+	
+>> 3 Missing values
+	# Let's go ahead and find out which variables of the dataset contain missing values
+	- Our dataset contains a few variables with a big proportion of missing values(4 variables at the top). 
+	- And some other variables with a small percentage of missing observations
+	- This means that to train a machine learning model with this data set, we need to impute the missing data in these variables.
+	- We can also visualize the percentage of missing values in the variables as follows;
+
+>> 3.1 Relationship between missing data and Sale Price;
+	# Let's evaluate the price of the house in those observations where the information is missing.
+	# We will do this for each variables that shows missing data.
+	
+
+
+## Data analysis demo - temporal variables
+> 4.1 Temporal variables;
+ # We have 4 years variables in the datasets
+ - YearBuilt: year in which the house was built
+ - YearRemodAdd: year in which house was remodeled
+ - GarageYrBlt: year in which a garage was built
+ - YrSold: year in which the house was sold.
+
+## Data analysis demo - numerical variables
+
+# 4.3.2  - Logarithmic Transformation
+
+## Data analysis demo - categorical variables
+
+## Feature engineering demo 1;
+
+- Reproducibility : Setting the seed.
+- Ensure reproducibility between runs of the same notebook, but also between the research and production environment.
+- For each step that includes some element of randomness, it is extremely important that we set the seed.
+
+>> In the followinng cells , we will engineer the variables of the House Price Dataset so that we tackle:
+- Missing values
+- Temporal variables
+- Non-Gaussian distributed variables
+- Categorical variables: remove rare labels
+- Categorical variables: convert string to numbers
+- Standardize the values of variables to same range.
+
+> 4.2.2 Numerical variables
+- To engineer missing values in numerical variables, we will;
+	* add binary missing indicator variable
+	* and then replace the missing values in the original variable with the mean
+
+> 4.4 Numerical Variable Transformation 
+	- The numerical variables are not normally distrubuted
+	- Transform with the logarithmic the positive numerical variables in order to get a more Gaussian-like distribution.
+
+> 4.5.3 Encoding of categorical variables
+	- we need to transform the strings of the categorical variables into numbers
+	- So, that we can capture the monotonic relationship between the label and the target.
+	
+> 4.6 Feature Scaling
+	- For use in linear models, feature need to be either scaled. we scale features to the minimum and maximum values.
+	
+
+## Feature Selection
+> 1.1 - Reproducibility : Setting the seed
+	* Aim is to ensure reproducibility between runs of the same notebook, but also between the research and production environment. 
+	* for each step that includes some element of randomness, it is extremely important that we set the seed.
+
+
+## Model Training;
+	- Reproducibility: Setting the seed
+	- The distribution of the error follows quite closely a gaussian distribution. That suggests that our model is doing a good job. 
+	
+
+# Research Environment;
+
+## Streamlining Machine Learning Pipelines with Open Source
+
+- Scikit-learn
+	* Solid implementation of wide range of machine learning algorithms and data transformation
+	* Clean, uniform and streamline API
+	* implemes new algorithm - Transformers , Estimators, Pipeline
+	* 
+
+# Scikit-learn - Estimators
+	- Estimators - A class fit() and predict() methods. It fits and predicts.
+	- Any ML algorithm like Lasso, Decision trees, SVMs are coded as estimators with Scikit-learn.
+
+# Scikit-learn - Transformers
+	- Transformers - class that have fit()and transform() methods.
+	- It transforms data; 
+		* Scalers
+		* Feature selectors
+		* Encoders
+		* Imputers
+		* Discretizers
+		* Transformers
+	
+
+# Scikit-learn - Pipeline
+	- Pipeline - class that allows to run transformers and estimators in sequence.
+		* Most steps are Transformers
+		* Last step can be an Estimator
+	
+# Pipeline - Its gives you single interface for all 3 steps of transformation and resulting estimator. 
+		   - It encapsulates transformers and predictors inside.
+		   - Pipeline class allows to run transformers and estimators in sequence.
+		   * Most steps are Transformers
+		   * Last step can be an Estimator
+		   
+# Open-source for Feature Engineering
+	- Scikit-learn
+	- Category Encoders
+	- Feature-engine
+	- Featuretools
+	- imbalanced learn
+
+# Open-source for Feature Selection
+	- Scikit-learn
+	- Feature-engine
+	- MLxtend
+
+
+# Open-source for Model Training
+	- Scikit-learn
+	- Keras
+	- MLxtend
+	- Py-earth
+	- xgboost
+	- Lasagne
+	- Many Others
+	
+
+## Open Source for Feature Engineering
+
+	# Scikit-learn
+	- Missing Data Imputation
+		* SimpleImputer
+		* IterativeImputer
+		
+	- Categorical Variable Encoding
+		* OneHotEncoder
+		* OrdinalEncoder
+		
+	- Scalers
+		* Standard Scaler
+		* MinMaxScaler
+		* Robust Scaler
+		* A few others
+	
+	- Discretisation
+		* KBinsDiscretizer
+		
+	- Variable Transformation
+		* PowerTransformer
+		* FunctionTransformer
+		
+	- Variable Combination
+		* Polynomial Features
+		
+	- Text
+		* Word Count
+		* TFiDF
+	
+
+## Create in-house software using Scikit-learn API
+	# Different steps if ML pipeline;
+		- Learn parameters from data
+		- Use those parameters to make transformations or predictions
+		
+	# Procedural Programming in ML
+		- Code:
+				* Learn the parameters
+				* Make the transformations
+				* Make the predictions
+		- Data:
+				* Store the parameters
+				* Mean values, regression coefficients , etc.
+	
+# Scikit-learn API documentation;
+	- https://scikit-learn.org/stable/modules/classes.html
+	* base.BaseEstimator
+	* base.TransformerMixin
+
+
+## Feature selection in the pipeline;
+
+- If deploying for the first time,
+	* Plus
+		- We don't have to hard code the predictive features
+	* However,
+		- Need to deploy code to engineer all features in the dataset
+		- Error handling and unit testing for all the code to engineering features.
+
+- What if we re-train our model frequently?
+	* Advantages,
+		- Can quickly retrain a model on the same input data
+		- No need to hard-cpde the new set of predictive features after each re-training.
+	
+	* Disadvantages
+		- Lack of data versatility
+		- No additional data can be fed through the pipeline.
+
+
+- Feature selection in the pipeline;
+	* Suitable:
+		- Model build and refreshed on same data
+		- Model build and refreshed on smaller datasets
+	
+	* No suitable,
+		- If model built using datasets with a high feature space
+		- If model constantly enriched iwth new data sources.
+	
+
+--------------------- Additonal notes ----------
+
+#--------- Bonus: Additional Resources on Scikit-Learn --------
+
+## Scikit-Learn and sklearn pipeline: Additional reading resources
+
+- Introduction to Scikit-Learn
+
+- Six reasons why I recommend Scikit-Learn
+
+- Why you should learn Scikit-Learn
+
+- Deep dive into SKlearn pipelines from Kaggle
+
+- SKlearn pipeline tutorial from Kaggle
+
+- Managing Machine Learning workflows with Sklearn pipelines
+
+- A simple example of pipeline in Machine Learning using SKlearn
+
+
+
+## Where can I learn more about feature engineering?
+
+- Feature Engineering for Machine Learning: A Comprehensive Overview
+
+- Best Resources to Learn about Feature Engineering for Machine Learning
+
+- Practical Code Implementation of Feature Engineering Techniques with Python
+
+
+## Where can I learn more about feature selection?
+
+- Feature Selection for Machine Learning: A comprehensive Overview
+
+
+## Where can I learn more about machine learning?
+
+- Resources to learn more about Machine Learning
+
+
+## Become a better python developer
+
+- We have gathered the following resources for data scientists who want to learn best practices in python programming.
+
+- The Best of the Best Practices (BOBP) Guide for Python
+
+- Python coding standards/best practices in Stackoverflow
+
+- Python Best Practices for More Pythonic Code
+
+- The Hitchhickers guide to python
+
+- Tutorials for pycharm here and here.
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M master
+git remote add origin https://github.com/jnybrahma/MLModelDevelopment.git
+git push -u origin master
+
+
+%----------------------------- Section 5: Packaging The Model for Production -------------------------------%
+
+# Production code is designed to be deployed to end users.
+	* Testability & Maintainability
+	* Scalability & Performance
+	* Reproducibility
+
+# Package Structure
+	-parent
+	|-regression_Model/
+	| |-- config/
+	| |-- datasets/
+	| |-- datasets/
+	| |-- processing/
+	| |-- trained_models/
+	| |-- config.yml
+	| |-- pipeline.py
+	| |-- predict.py
+	| |-- train_pipeline.py
+	| |-- VERSION
+	|-requirements/
+	| |-- requirements.txt
+	| |-- test_requirements.txt
+	|-setup.py
+	|-MANIFEST.in
+	|-pyproject.toml
+	|-tox.ini
+	|-tests/
+
+
+https://github.com/trainindata/deploying-machine-learning-models/tree/master/section-05-production-model-package
+
+
+	
+
+- Package the Model
+- Create a Model API
+- Deploy to PaaS
+- Testing
+
+# Why do we Structure this this ways ?
+- How do we know how to structure our own projects?
+	- Conventions 
+		|-> Versioning
+		|-> Config
+		|-> PEP8/linting tools
+		
+	- Packaging Mandatory Files
+		|-> setup.py
+		|-> MANIFEST
+	
+	- Software Engineering Best Practices
+		|-> For packages
+			|-> Separating train & predict code
+		|-> General
+			|-> Testability -> [Can you write unit tests for one specific bit of functionality?]->[e.g. data_manager functions]
+			|-> Separation of Concerns i.e modularity -> [e.g data manager + data validation]
+			|-> SOLID -> [e.g. what is the role of the train_pipeline module]
+			|-> Maintainability -> [Imagine a PR]
+
+# - Pick a convention (e.g. for config) - choose one your friends/colleagues use. Established conventions
+  - usually adhere to good practices (and learning when they do not takes practice)
+  - Follow a standard where possible (e.g. Python packaging)
+  - Optimise you code for readability - this includes structure. The principle of least astonishment is useful.
+ 
+
+
+(MLDeploymentEnv) C:\Users\User> jupyter-lab 
+(MLDeploymentEnv) C:\Users\User> jupyter-lab --notebook-dir=C:/
+
+http://localhost:8888/lab
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section5a> pip install -r requirements\requirements.txt
+
+# Python tox automation project;
+
+- tox aims to automate and standardize testing in Python. It is part of a larger vision of easing packaging, testing and release process of python software.
+- tox is generic virtualenv management and test command line tool.
+
+
+https://tox.wiki/en/4.24.1/
+
+> pip install tox
+
+> tox -e train
+
+C:\Users\User\AppData\Roaming\pip\pip.ini
+
+-------------------pip.ini-------------------------
+
+[global]
+trusted-host = pypi.python.org
+               pypi.org
+               files.pythonhosted.org
+
+---------------------------------------------------
+
+%--------------------------- Create and Activate python environment (venv) -----------------------%
+
+PS C:\Udemy_Course\Deploy_ML_Models\Projects\deployModel> py -3.9 -m venv MLModelEnv
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deployModel\MLModelEnv\Scripts> activate
+
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deployModel\MLModelEnv\Scripts>jupyter-lab --notebook-dir=C:/
+
+
+http://localhost:8888/lab
+
+
+C:\Users>py -0
+ -V:3.13 *        Python 3.13 (64-bit)
+ -V:3.9           Python 3.9 (Store)
+ 
+ C:\Users> py -3.9
+Python 3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+C:\Users\User\AppData\Local\programs\python\python39\Scripts
+
+C:\Users> py -3.9 -m pip install tox
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section5a> python -m tox
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section5a> py -3.9  -m pip install wheel
+
+C:\Users\User> python -m pip install tox
+
+
+## Note:
+- to run the pytest name of file should start from test_xxx
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\examplePyTest>pytest
+
+================================================= test session starts =================================================
+platform win32 -- Python 3.9.13, pytest-8.3.5, pluggy-1.5.0
+rootdir: C:\Udemy_Course\Deploy_ML_Models\Projects\examplePyTest
+plugins: anyio-4.8.0
+collected 2 items
+
+test_My_Module.py .                                                                                              [ 50%]
+test_My_Module_again.py .                                                                                        [100%]
+
+
+
+================================================== 2 passed in 0.06s ==================================================
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\examplePyTest>
+
+
+%------------- Building Package ----------------%
+
+C:\> py -3.9 -m pip install --upgrade build
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section5a>py -3.9 -m  build
+
+or C:\Udemy_Course\Deploy_ML_Models\Projects\section5a>python  -m  build
+
+
+* Creating isolated environment: virtualenv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=42
+  - wheel
+* Getting build dependencies for sdist...
+running egg_info
+creating tid_regression_model.egg-info
+writing tid_regression_model.egg-info\PKG-INFO
+writing dependency_links to tid_regression_model.egg-info\dependency_links.txt
+writing requirements to tid_regression_model.egg-info\requires.txt
+writing top-level names to tid_regression_model.egg-info\top_level.txt
+writing manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+reading manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.txt'
+warning: no files found matching '*.md'
+warning: no files found matching '*.pkl'
+warning: manifest_maker: MANIFEST.in, line 4: 'recursive-include' expects <dir> <pattern1> <pattern2> ...
+
+warning: no files found matching 'regression_model\trained_models\*.pkl'
+warning: no previously-included files found matching '*.log'
+warning: no previously-included files found matching '*.cfg'
+warning: no previously-included files matching '__pycache__' found under directory '*'
+warning: no previously-included files matching '*.py[co]' found under directory '*'
+writing manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing tid_regression_model.egg-info\PKG-INFO
+writing dependency_links to tid_regression_model.egg-info\dependency_links.txt
+writing requirements to tid_regression_model.egg-info\requires.txt
+writing top-level names to tid_regression_model.egg-info\top_level.txt
+reading manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.txt'
+warning: no files found matching '*.md'
+warning: no files found matching '*.pkl'
+warning: manifest_maker: MANIFEST.in, line 4: 'recursive-include' expects <dir> <pattern1> <pattern2> ...
+
+warning: no files found matching 'regression_model\trained_models\*.pkl'
+warning: no previously-included files found matching '*.log'
+warning: no previously-included files found matching '*.cfg'
+warning: no previously-included files matching '__pycache__' found under directory '*'
+warning: no previously-included files matching '*.py[co]' found under directory '*'
+writing manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+warning: sdist: standard file not found: should have one of README, README.rst, README.txt, README.md
+
+running check
+creating tid_regression_model-0.0.1
+creating tid_regression_model-0.0.1\regression_model
+creating tid_regression_model-0.0.1\regression_model\config
+creating tid_regression_model-0.0.1\regression_model\datasets
+creating tid_regression_model-0.0.1\regression_model\processing
+creating tid_regression_model-0.0.1\regression_model\trained_models
+creating tid_regression_model-0.0.1\requirements
+creating tid_regression_model-0.0.1\tests
+creating tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying files to tid_regression_model-0.0.1...
+copying MANIFEST.in -> tid_regression_model-0.0.1
+copying pyproject.toml -> tid_regression_model-0.0.1
+copying setup.py -> tid_regression_model-0.0.1
+copying regression_model\VERSION -> tid_regression_model-0.0.1\regression_model
+copying regression_model\__init__.py -> tid_regression_model-0.0.1\regression_model
+copying regression_model\config.yml -> tid_regression_model-0.0.1\regression_model
+copying regression_model\pipeline.py -> tid_regression_model-0.0.1\regression_model
+copying regression_model\predict.py -> tid_regression_model-0.0.1\regression_model
+copying regression_model\train_pipeline.py -> tid_regression_model-0.0.1\regression_model
+copying regression_model\config\__init__.py -> tid_regression_model-0.0.1\regression_model\config
+copying regression_model\config\core.py -> tid_regression_model-0.0.1\regression_model\config
+copying regression_model\datasets\__init__.py -> tid_regression_model-0.0.1\regression_model\datasets
+copying regression_model\datasets\test.csv -> tid_regression_model-0.0.1\regression_model\datasets
+copying regression_model\datasets\train.csv -> tid_regression_model-0.0.1\regression_model\datasets
+copying regression_model\processing\__init__.py -> tid_regression_model-0.0.1\regression_model\processing
+copying regression_model\processing\data_manager.py -> tid_regression_model-0.0.1\regression_model\processing
+copying regression_model\processing\features.py -> tid_regression_model-0.0.1\regression_model\processing
+copying regression_model\processing\validation.py -> tid_regression_model-0.0.1\regression_model\processing
+copying regression_model\trained_models\__init__.py -> tid_regression_model-0.0.1\regression_model\trained_models
+copying requirements\requirements.txt -> tid_regression_model-0.0.1\requirements
+copying requirements\test_requirements.txt -> tid_regression_model-0.0.1\requirements
+copying tests\test_features.py -> tid_regression_model-0.0.1\tests
+copying tests\test_prediction.py -> tid_regression_model-0.0.1\tests
+copying tid_regression_model.egg-info\PKG-INFO -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying tid_regression_model.egg-info\SOURCES.txt -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying tid_regression_model.egg-info\dependency_links.txt -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying tid_regression_model.egg-info\requires.txt -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying tid_regression_model.egg-info\top_level.txt -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+copying tid_regression_model.egg-info\SOURCES.txt -> tid_regression_model-0.0.1\tid_regression_model.egg-info
+Writing tid_regression_model-0.0.1\setup.cfg
+Creating tar archive
+removing 'tid_regression_model-0.0.1' (and everything under it)
+* Building wheel from sdist
+* Creating isolated environment: virtualenv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=42
+  - wheel
+* Getting build dependencies for wheel...
+running egg_info
+writing tid_regression_model.egg-info\PKG-INFO
+writing dependency_links to tid_regression_model.egg-info\dependency_links.txt
+writing requirements to tid_regression_model.egg-info\requires.txt
+writing top-level names to tid_regression_model.egg-info\top_level.txt
+reading manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.txt'
+warning: no files found matching '*.md'
+warning: no files found matching '*.pkl'
+warning: manifest_maker: MANIFEST.in, line 4: 'recursive-include' expects <dir> <pattern1> <pattern2> ...
+
+warning: no files found matching 'regression_model\trained_models\*.pkl'
+warning: no previously-included files found matching '*.log'
+warning: no previously-included files matching '__pycache__' found under directory '*'
+warning: no previously-included files matching '*.py[co]' found under directory '*'
+writing manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build\lib\regression_model
+copying regression_model\pipeline.py -> build\lib\regression_model
+copying regression_model\predict.py -> build\lib\regression_model
+copying regression_model\train_pipeline.py -> build\lib\regression_model
+copying regression_model\__init__.py -> build\lib\regression_model
+creating build\lib\regression_model\config
+copying regression_model\config\core.py -> build\lib\regression_model\config
+copying regression_model\config\__init__.py -> build\lib\regression_model\config
+creating build\lib\regression_model\datasets
+copying regression_model\datasets\__init__.py -> build\lib\regression_model\datasets
+creating build\lib\regression_model\processing
+copying regression_model\processing\data_manager.py -> build\lib\regression_model\processing
+copying regression_model\processing\features.py -> build\lib\regression_model\processing
+copying regression_model\processing\validation.py -> build\lib\regression_model\processing
+copying regression_model\processing\__init__.py -> build\lib\regression_model\processing
+creating build\lib\regression_model\trained_models
+copying regression_model\trained_models\__init__.py -> build\lib\regression_model\trained_models
+running egg_info
+writing tid_regression_model.egg-info\PKG-INFO
+writing dependency_links to tid_regression_model.egg-info\dependency_links.txt
+writing requirements to tid_regression_model.egg-info\requires.txt
+writing top-level names to tid_regression_model.egg-info\top_level.txt
+reading manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.txt'
+warning: no files found matching '*.md'
+warning: no files found matching '*.pkl'
+warning: manifest_maker: MANIFEST.in, line 4: 'recursive-include' expects <dir> <pattern1> <pattern2> ...
+
+warning: no files found matching 'regression_model\trained_models\*.pkl'
+warning: no previously-included files found matching '*.log'
+warning: no previously-included files matching '__pycache__' found under directory '*'
+warning: no previously-included files matching '*.py[co]' found under directory '*'
+writing manifest file 'tid_regression_model.egg-info\SOURCES.txt'
+copying regression_model\VERSION -> build\lib\regression_model
+copying regression_model\config.yml -> build\lib\regression_model
+copying regression_model\datasets\test.csv -> build\lib\regression_model\datasets
+copying regression_model\datasets\train.csv -> build\lib\regression_model\datasets
+installing to build\bdist.win-amd64\wheel
+running install
+running install_lib
+creating build\bdist.win-amd64\wheel
+creating build\bdist.win-amd64\wheel\regression_model
+creating build\bdist.win-amd64\wheel\regression_model\config
+copying build\lib\regression_model\config\core.py -> build\bdist.win-amd64\wheel\.\regression_model\config
+copying build\lib\regression_model\config\__init__.py -> build\bdist.win-amd64\wheel\.\regression_model\config
+copying build\lib\regression_model\config.yml -> build\bdist.win-amd64\wheel\.\regression_model
+creating build\bdist.win-amd64\wheel\regression_model\datasets
+copying build\lib\regression_model\datasets\test.csv -> build\bdist.win-amd64\wheel\.\regression_model\datasets
+copying build\lib\regression_model\datasets\train.csv -> build\bdist.win-amd64\wheel\.\regression_model\datasets
+copying build\lib\regression_model\datasets\__init__.py -> build\bdist.win-amd64\wheel\.\regression_model\datasets
+copying build\lib\regression_model\pipeline.py -> build\bdist.win-amd64\wheel\.\regression_model
+copying build\lib\regression_model\predict.py -> build\bdist.win-amd64\wheel\.\regression_model
+creating build\bdist.win-amd64\wheel\regression_model\processing
+copying build\lib\regression_model\processing\data_manager.py -> build\bdist.win-amd64\wheel\.\regression_model\processing
+copying build\lib\regression_model\processing\features.py -> build\bdist.win-amd64\wheel\.\regression_model\processing
+copying build\lib\regression_model\processing\validation.py -> build\bdist.win-amd64\wheel\.\regression_model\processing
+copying build\lib\regression_model\processing\__init__.py -> build\bdist.win-amd64\wheel\.\regression_model\processing
+creating build\bdist.win-amd64\wheel\regression_model\trained_models
+copying build\lib\regression_model\trained_models\__init__.py -> build\bdist.win-amd64\wheel\.\regression_model\trained_models
+copying build\lib\regression_model\train_pipeline.py -> build\bdist.win-amd64\wheel\.\regression_model
+copying build\lib\regression_model\VERSION -> build\bdist.win-amd64\wheel\.\regression_model
+copying build\lib\regression_model\__init__.py -> build\bdist.win-amd64\wheel\.\regression_model
+running install_egg_info
+Copying tid_regression_model.egg-info to build\bdist.win-amd64\wheel\.\tid_regression_model-0.0.1-py3.9.egg-info
+running install_scripts
+creating build\bdist.win-amd64\wheel\tid_regression_model-0.0.1.dist-info\WHEEL
+creating 'C:\Udemy_Course\Deploy_ML_Models\Projects\section5a\dist\.tmp-pcn552j_\tid_regression_model-0.0.1-py3-none-any.whl' and adding 'build\bdist.win-amd64\wheel' to it
+adding 'regression_model/VERSION'
+adding 'regression_model/__init__.py'
+adding 'regression_model/config.yml'
+adding 'regression_model/pipeline.py'
+adding 'regression_model/predict.py'
+adding 'regression_model/train_pipeline.py'
+adding 'regression_model/config/__init__.py'
+adding 'regression_model/config/core.py'
+adding 'regression_model/datasets/__init__.py'
+adding 'regression_model/datasets/test.csv'
+adding 'regression_model/datasets/train.csv'
+adding 'regression_model/processing/__init__.py'
+adding 'regression_model/processing/data_manager.py'
+adding 'regression_model/processing/features.py'
+adding 'regression_model/processing/validation.py'
+adding 'regression_model/trained_models/__init__.py'
+adding 'tid_regression_model-0.0.1.dist-info/METADATA'
+adding 'tid_regression_model-0.0.1.dist-info/WHEEL'
+adding 'tid_regression_model-0.0.1.dist-info/top_level.txt'
+adding 'tid_regression_model-0.0.1.dist-info/RECORD'
+removing build\bdist.win-amd64\wheel
+Successfully built tid_regression_model-0.0.1.tar.gz and tid_regression_model-0.0.1-py3-none-any.whl
+
+
+## Section Notes & Further Reading
+- Further Reading Materials
+- Python Conventions
+
+
+- PEP8 : -https://peps.python.org/pep-0008/
+
+- PEP 484 - typehints - https://peps.python.org/pep-0484/
+
+- Using requirements files - https://realpython.com/lessons/using-requirement-files/
+
+- Tox Overview - https://christophergs.com/python/2020/04/12/python-tox-why-use-it-and-tutorial/
+
+- Building Python Packages - https://hitchdev.com/strictyaml/why-not/turing-complete-code/
+
+- Why not use Python for config - https://hitchdev.com/strictyaml/why-not/turing-complete-code/
+
+- Primer on pyproject.toml - https://snarky.ca/what-the-heck-is-pyproject-toml/
+
+## Section Gotchas
+
+- Make sure you download the Kaggle files
+
+- For Windows users the MAX_PATH limitation- https://docs.python.org/3/using/windows.html#removing-the-max-path-limitation
+
+
+%----------------------------- Section 6: Serving and Deploying Model Via REST API-------------------------------%
+
+
+## Running the API Locally
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api> tox run -e run
+
+http://localhost/8001/
+
+http://localhost:8001/api/v1/health
+
+
+## Architecture of ML API + Implications
+## ML System Architectures
+- Model embedded in application
+- Served via a dedicated service
+- Model published as data (streaming)
+- Batch prediction (offline process)
+
+
+- Architecture 1: Embedded
+- Architecture 2: Dedicated Model API
+
+
+## Introducing FastAPI
+- Web Frameworks
+	> Provide tools to handle & automate standard tasks when building web applications
+		* Session management
+		* Templating
+		* Database Access and much more!
+
+- Features of FastAPI
+	* It's Fast - leverage Python async capabilities
+	* Validation with type hints and Pydantic
+	* Automatic Documentation
+	* Dependency Injection
+	* Much more!
+
+
+> pip install "fastapi[standard]"
+> pip install uvicorn
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\fastapi-quick-demo>uvicorn main:app --reload
+
+http://127.0.0.1:8000
+
+http://127.0.0.1:8000/square?num=3
+
+http://127.0.0.1:8000/square?num=4
+
+http://127.0.0.1:8000/docs
+
+
+## API Endpoints
+
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api> tox -e test_app
+
+
+## Using Schemas in API
+
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api> tox run -e run
+
+http://localhost:8001/api/v1/health
+
+## Logging 
+
+https://docs.python.org/3/library/logging.html
+
+
+## Uvicorn Web Server
+>> Production Components: Web Server
+- Productin deployment - Web Server
+- A server implements a "Server gateway interface"
+- WSGI ( Web Server Gateway Interface) & ASGI (Asynchonous Server Gateway Interface)
+- Uvicorn is an implementation of this interface.
+
+https://www.uvicorn.org/
+
+https://peps.python.org/pep-0333/
+
+
+## Railway App as  Platform as Service(PaaS)
+
+## PaaS Providers
+- AWS Elastic Beanstalk
+- Microsoft Azure App Service
+- Heroku
+- Deta
+- Vercel
+- Digital Ocean App Platform
+- PythonAnywhere
+
+## Railway Links
+- The next lecture contains a full deployment - make sure you follow along and deploy your application as well!
+
+- Create your railway account here: https://railway.app/
+
+- Install the CLI via these instructions: https://docs.railway.app/develop/cli
+
+
+
+Note: We do not have an affiliation/sponsorship from Railway.
+
+## Installing CLI command line;
+
+C:\>npm i -g @railway/cli
+
+https://docs.railway.com/guides/cli
+
+-----------------------------------------------------------------------------------------------------------------------
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api> railway login --browserless
+
+Browserless Login
+https://railway.com/cli-login?d=d29yZENvZGU9YWZmZWN0aW9uYXRlLXNoYWxsb3ctdW5hYmxlLXRvYWQmaG9zdG5hbWU9VVNFUi1PS0g4UzVJRDVK
+Your pairing code is: affectionate-shallow-unable-toad
+Logged in as jnybrahma@gmail.com
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api>railway link
+> Select a workspace Jnyananjoy Brahma's Projects
+> Select a project glorious-delight
+> Select an environment production
+
+Project glorious-delight linked successfully! 🎉
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api>railway up
+
+
+C:\Udemy_Course\Deploy_ML_Models\Projects\section-06-model-serving-api\house-prices-api> railway up --detach
+> Select a service brilliant-reprieve
+  Indexed                                                                                                                 
+  Compressed [====================] 100%                                                                                  
+  Failed                                                                                                                
+  Failed to upload code with status code 404 Not Found
+
+
+
+%----------------------------- Section 7: Continuose Integration and Deployment Pipeline -------------------------------%
+
+=> Continuous Intergration --> Continuous Delivery --> Continuous Deployment
+
+
+## Using CircleCI
+- Hosted platform
+- Easy github integration
+- One free project
+- Many great features
+- Trusted by many top companies
+
+https://circleci.com/
+
+## CircleCI CI/CD Config;
+
+
+## Python Package Index and Gemfurry
+
+
+## Publishing the package private file server using (Gemfurry)
+
+https://gemfury.com/
+
+https://gemfury.com/help/pypi-server
+
+Your secret Repository URL
+The secret repository URL is the PyPI endpoint for your Gemfury account and packages.
+Do not share this URL to keep your account private.
+
+Your PyPI URL has the following format:
+
+https://TOKEN:@pypi.fury.io/USERNAME/
+
+
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M master
+git remote add origin https://github.com/jnybrahma/Deploy_ML_Model.git
+git push -u origin master
+
+
+## Section Notes & Further Reading
+
+- Introduction to CI/CD
+- CircleCI workflows
+
+- Filter workflows by branch (the very observant students will notice how in lecture 3 the job still runs, 
+- even though I haven't merged it into master yet - I cheated.)
+
+- CircleCI use environment variables
+- Index Servers :- https://packaging.python.org/en/latest/guides/hosting-your-own-index/
+- Gemfury Tokens :- https://gemfury.com/help/pypi-server/
+- Github Forks :- https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo
+- Get Railway app token :- https://docs.railway.com/guides/cli#project-token
+- The kaggle CLI :- https://github.com/Kaggle/kaggle-api
+- Git tags :- https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+
+%----------------------------- Section 8: Deploying ML API with Containers -------------------------------%
+
+## Docker : Containers and Images
+
+# Images
+- Contain files and metadata
+- Are notrunning processes
+
+# Containers
+- Are created from images
+- Are running processes
+
+## Why Use Docker?
+- Software Systems
+- Standardization (Build once, run anywhere)
+- CI Efficiency
+- Maintainability
+- Isolation (Process Isolation)
+- Security
+- Scalability
+- Business Cost Reduction
+- Compatibility
+
+## Container Deployments:
+
+- Docker Install Setup;
+- To follow along with the next lecture (where you run docker commands locally), you will need to install Docker. 
+- Depending on your operating system this may or may not be difficult.
+
+- The best guide for this is the docker install documentation https://docs.docker.com/get-started/get-docker/
+- We recommend that you install and do the exercises, but if it all proves too challenging, 
+- you can also skip to the CI lecture where everything runs in the cloud.
+
+## Section Notes & Further Reading
+
+- Docker Documentation: https://docs.docker.com/
+
+- Railway Docker Deployments: https://docs.railway.app/deploy/dockerfiles
+
+
+%----------------------------- Section 9: Differential Testing -------------------------------%
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo
+$ git init
+Initialized empty Git repository in C:/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo/.git/
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (master)
+$ git branch -M fast_api
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+$ git remote add origin https://github.com/jnybrahma/Deploy_ML_Model.git
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+$ git add .
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+$ git commit -m "Initial Update"
+[fast_api (root-commit) 3590708] Initial Update
+ 2 files changed, 14 insertions(+)
+ create mode 100644 __pycache__/main.cpython-39.pyc
+ create mode 100644 main.py
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+$ git checkout fast_api
+Already on 'fast_api'
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+$ git push -u origin fast_api
+
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 882 bytes | 441.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+remote:
+remote: Create a pull request for 'fast_api' on GitHub by visiting:
+remote:      https://github.com/jnybrahma/Deploy_ML_Model/pull/new/fast_api
+remote:
+To https://github.com/jnybrahma/Deploy_ML_Model.git
+ * [new branch]      fast_api -> fast_api
+branch 'fast_api' set up to track 'origin/fast_api'.
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/fastapi-quick-demo (fast_api)
+
+-------------------------------------------------------------------------------------------------------------------------
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest
+$ git init
+Initialized empty Git repository in C:/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest/.git/
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest (master)
+$ git branch -M sample_pyTest
+
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest (sample_pyTest)
+$ git remote add origin https://github.com/jnybrahma/Deploy_ML_Model.git
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest (sample_pyTest)
+$ git add .
+
+>> User@USER-OKH8S5ID5J MINGW64 /c/Udemy_Course/Deploy_ML_Models/Projects/examplePyTest (sample_pyTest)
+$ git push -u origin sample_pyTest
+
+Enumerating objects: 17, done.
+Counting objects: 100% (17/17), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (16/16), done.
+Writing objects: 100% (17/17), 3.21 KiB | 822.00 KiB/s, done.
+Total 17 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), done.
+remote:
+remote: Create a pull request for 'sample_pyTest' on GitHub by visiting:
+remote:      https://github.com/jnybrahma/Deploy_ML_Model/pull/new/sample_pyTest
+remote:
+To https://github.com/jnybrahma/Deploy_ML_Model.git
+ * [new branch]      sample_pyTest -> sample_pyTest
+branch 'sample_pyTest' set up to track 'origin/sample_pyTest'.
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models> git checkout 75b48f55a9b6dd94c40846f5a66c7f217a1f580b
+Note: switching to '75b48f55a9b6dd94c40846f5a66c7f217a1f580b'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 75b48f5 Section 6.2 - Initial setup
+
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models> dir
+ Volume in drive C is OS
+ Volume Serial Number is 8A67-CB24
+
+ Directory of C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models
+
+06/04/2025  06:20 PM    <DIR>          .
+06/04/2025  08:40 AM    <DIR>          ..
+06/04/2025  06:20 PM             1,545 .gitignore
+06/04/2025  06:20 PM    <DIR>          packages
+06/04/2025  06:20 PM                88 README.md
+               2 File(s)          1,633 bytes
+               3 Dir(s)  402,139,287,552 bytes free
+
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models> cd packages
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models\packages> dir
+ Volume in drive C is OS
+ Volume Serial Number is 8A67-CB24
+
+ Directory of C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models\packages
+
+06/04/2025  06:20 PM    <DIR>          .
+06/04/2025  06:20 PM    <DIR>          ..
+06/04/2025  06:20 PM    <DIR>          regression_model
+               0 File(s)              0 bytes
+               3 Dir(s)  402,130,616,320 bytes free
+
+(MLModelEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\deploying-machine-learning-models\packages>
+
+------------------------------------------------------------------------------------------------------------------
+
+## Differential Tests
+- A type of test that compares the differences in execution from one system version to the next when the inpiuts are the same.
+* Sometimes called "back-to-back" testing
+* Very useful for detecting machine learning system errors that do not raise exceptions.
+* Tuning them is a balancing act (depends on business requirements).
+* Can prevent very painful mistakes mistakes that are not detected for long periods of time.
+
+## Setting up diferential test
+
+- Differential tests can protect you from costly mistakes
+- Run them like any other tests in you CI Pipeline.
+- Easiest with Docker
+
+# Test to Consider
+- If a prediction and/or training speed is key metruc for you, consider implementing benchmark tests to compare the speed of fucntions from
+- one system version to next.
+- A great framework for doing this is pytest-benchmark.
+- In complex microservice environments, you may also wish to consider API contract testing.
+- A nice framework for this is Pact.
+
+%----------------------------- Section 10: Deploying to IaaS (AWS ECS)  -------------------------------%
+
+## Deploying with IaaS (AWS ECS)
+
+# ECS (Elastic Container Service)
+- ECS Tasks
+	* A task is like a blueprint for your application(a bit like Dockerfile).
+	* AWS ECS knows which Docker image to use for containers.
+	* S3 , Load Balancing, new ELK
+	* MS Azure, Google, Compute Engine
+	* Container orchestration engines (Kubernetes,Docker Swarm)
+	
+- ECS Services
+	* AWS ECS allows you to run and maintain a specfied number of instances of task definition simultaneously in an ECS cluster.
+	* This is called a Service.
+	
+C:\Windows\System32>aws --version
+aws-cli/1.38.30 Python/3.12.6 Windows/11 botocore/1.37.30
+
+
+C:\>aws configure
+AWS Access Key ID [None]: AKIA2USXTWGQITDHS2QB
+AWS Secret Access Key [None]: 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
+Default region name [None]: us-east-1
+Default output format [None]:
+
+C:\>aws iam list-users
+{
+    "Users": [
+        {
+            "Path": "/",
+            "UserName": "ecs-admin-user",
+            "UserId": "AIDA2USXTWGQMGC4T72YA",
+            "Arn": "arn:aws:iam::731401925024:user/ecs-admin-user",
+            "CreateDate": "2025-04-08T10:45:32Z"
+        }
+    ]
+}
+
+
+
+- Amazon Elastic Container Service (ECS)
+- Amazon Elastic Container Registry (ECR)
+
+
+
+%----------------------------- Section 11: Deep Learning Model with Big Data -------------------------------%
+
+## Deploying Models with Big Data;
+
+## What is big data?
+- Big data is essential a large volume of data
+	* Structured
+	* Semi-structured
+	* Unstructured
+- Normally used for analytics and machine learning.
+- Typically terabytes and above.
+
+## Challenges of using big data im ML;
+- Big Data
+	* Text- large documents
+	* Images
+	* Complex Time Series
+	* Deep learning model
+	* Neural Network can be extremely compute heavy
+	* During training takes up to a lot of compute power
+	* When scoring can also take a lot of compute power
+	* Difficult to scale
+	* Normally rely on GPUs
+	* GPUs can be scare and expensive
+-------------------------------------------------------------------------------------------------------
+Installing Keras
+Install Keras, Theano and Tensorflow
+Keras supports up to python 3.6. So if you are using the latest version of python, 
+we suggest you create a virtual environment and install a former python version.
+We are going to show you how to create virtual environments in a later section. 
+For now, if you are using anaconda follow this link to create the environment of your choice.
+
+Briefly (for windows users) in the anaconda prompt:
+
+>> conda create -n py36 python=3.6 anaconda
+>> activate py36
+>> conda install theano
+>> pip install tensorflow
+>> pip install keras
+>> pip install jupyterlab
+>> jupyter-lab --notebook-dir=C:/
+>> pip install glob2
+>> pip install opencv-python
+>> pip install opencv-python==4.3.0.38
+>> pip install scikit-learn==0.24.1
+>> pip install scipy
+>> pip install statsmodels
+>> pip install pytest-warnings
+
+C:\> conda activate BigDataML
+
+If you are using mac or Ubuntu, follow the recommendations in the Keras, Theano and Tensorflow documentation.
+
+To switch backends between Theano and Tensorflow follow this link.
+
+To add the created environments to the Jupyter notebook follow this link. Briefly, if using conda, from anaconda prompt:
+
+>> source activate py36
+>> python -m ipykernel install --user --name py36 --display-name "Python py36"
+>> source activate other-env
+>> python -m ipykernel install --user --name other-env --display-name "Python (other-env)"
+C:\> conda activate BigDataML
+(BigDataML) C:\Udemy_Course\Deploy_ML_Models\Projects> jupyter-lab --notebook-dir=C:/
+
+-----------------------------------------------------------------------------------------------
+
+Download the data set
+Download data sets from Kaggle
+Visit the V2 Plant Seedlings Dataset website
+https://www.kaggle.com/datasets/vbookshelf/v2-plant-seedlings-dataset
+
+Go to the tab "Data" and click on the buttom "Download (2GB)".
+
+Unzip the file.
+
+Make sure you remove the apostrophe in the folder "Sheperd's Purse" so that it is renamed to "Sheperds Purse" to avoid python string parsing issues.
+
+Create a Kaggle account
+
+If you haven't done so already, create a Kaggle account as follows to be able to download the data set:
+Visit Kaggle's website
+Click on the "Create an account" button and follow the instructions to set up your account
+
+
+------------------------------------------------------------------------------------------
+## V2 Plant Seedling Dataset
+
+## Building a CNN in Research Environment
+
+
+>> git commit -m "first commit"
+>> git branch -M master
+>> git remote add origin https://github.com/jnybrahma/BigDataML.git
+>> git push -u origin master
+
+
+
+## Production Code for CNN Production
+
+>> git branch -M production
+>> git remote add origin https://github.com/jnybrahma/BigDataML.git
+>> git push -u origin production
+
+
+## Reproducibility in Neural Networks
+
+## Why Reproducibility - matters
+
+* Reproducibility ensures models gain performance are genuine.
+	- not from hidden sources of randomness
+* Reproducibility reduces or eliminates variations when re-running experiments
+	- Essential for testing and continuous integration and iterative refinement of models.
+* Reproducibility is increasingly important as sophisticated models and real-time data streams push us towards distributed training across clusters of GPUs
+	- More sources of non-determinism behaviour during model training.
+
+## What causes non-reproducibility?
+* Random initialization of layer weights: the weights of the different layers are initialised randomly
+* Shuffling of datasets: The dataset is randomly shuffled for example if we leave 10% of the sample for cross-validation within model.fit
+* Noisy hidden layers: Dropout layers , which exclude the contribution of a particular neuron, are initialsed randomly.
+* Changes in ML frameworks: Different version of ML libraries can lead different behavior.
+
+
+## What causes non-reproducibility?
+* Non-deterministic GPU floating point calculations: If using GPs, certain functions in cuDNN, the Nvidia Deep Neural Network library for GPUs,
+* are stochastic, which means that they are initialised randomly at each run.
+* CPU multi-threading: CPU parallelization when using TensorFlow.
+
+## How to control for random initialisation?
+* Keras gets its source of randomness from the NumPy random number generator
+	- See the numpy random generator both for Theano or TensorFlow backend.
+* Tensorflow used multiple threads, which may cause non-reproducible results
+	- Force TensorFlow to use single thread
+* In python  , you need to set a flag before running your script
+	- PYTHONHASHSEED=0
+* Set the  cuDNN as deterministic
+
+-------------------------------------------------------------------------------------
+Setting the Seed for Keras
+Ensuring reproducibility within the python script
+
+
+To ensure reproducible results when utilising Keras in CPUs you need to do the following:
+
+Set PYTHONHASHSEED environment variable at a fixed value
+
+Set python built-in pseudo-random generator at a fixed value
+
+Set numpy pseudo-random generator at a fixed value
+
+Set tensorflow pseudo-random generator at a fixed value (if using Tensorflow backend only)
+
+Configure a new global tensorflow session (if using Tensorflow backend only)
+
+The code below is extracted from Keras documentation:
+
+# Seed value
+seed_value= 0
+ 
+# 1. Set `PYTHONHASHSEED` environment variable at a fixed value
+import os
+os.environ['PYTHONHASHSEED']=str(seed_value)
+ 
+# 2. Set `python` built-in pseudo-random generator at a fixed value
+import random
+random.seed(seed_value)
+ 
+# 3. Set `numpy` pseudo-random generator at a fixed value
+import numpy as np
+np.random.seed(seed_value)
+ 
+# 4. Set `tensorflow` pseudo-random generator at a fixed value
+import tensorflow as tf
+tf.set_random_seed(seed_value)
+ 
+# 5. Configure a new global `tensorflow` session
+from keras import backend as K
+session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+K.set_session(sess)
+
+With this snippet of code, you wouldn't have to specify any other seed or random_state in numpy, scikit-learn or tensorflow/keras functions, 
+because with the source code above we set globally their pseudo-random generators at a fixed value.
+
+
+
+Alternatively, you can run from your command prompt:
+
+PYTHONHASHSEED=0 python yourKerasPythonScript.py
+and then you don't need to specify the PTYHONHASHSEED from within the script.
+
+
+
+Removing Stochastic behaviour from cuDNN
+To remove the stochastic behaviour of the Nvidia cuDNN library you need to run your script as follows:
+
+PYTHONHASHSEED=0, THEANO_FLAGS="dnn.conv.algo_bwd_filter=deterministic,dnn.conv.algo_bwd_data=deterministic" python yourKerasPythonScript.py
+Or set the cuDNN to be non-deterministic from its .theanorc file:
+
+[dnn]
+enabled = True
+include_path = /usr/local/cuda/include
+library_path = /usr/local/cuda/lib64
+ 
+[dnn.conv]
+ 
+algo_bwd_data=deterministic
+algo_bwd_filter=deterministic
+
+
+Links to threads regarding reproducibility in Keras
+Keras documentation : 
+https://keras.io/getting_started/faq/
+
+How to get reproducible results in keras, StackOverflow :
+https://stackoverflow.com/questions/32419510/how-to-get-reproducible-results-in-keras
+
+Any way to note down or control the random seeds? in git Keras issues
+https://github.com/keras-team/keras/issues/439
+
+mnist_cnn.py does not give reproducible results, in git Keras issues
+https://github.com/keras-team/keras/issues/2479
+
+--------------------------------------------------------------------------------------
+Seed for Neural Networks - Additional reading resources
+Blogs
+- How to Get Reproducible Results with Keras
+https://machinelearningmastery.com/reproducible-results-neural-networks-keras/
+
+- Reproducibility in ML: Why It Matters and How to Achieve It
+https://determined.ai/blog/reproducibility-in-ml/
+
+-------------------------------------------------------------------------------------------
+##Packaging the CNN
+
+
+
+## Adding the CNN to the API
+
+
+
+## Wrap Up - Training in CI - Speed and Memory Considerations
+# Training large dataset issues:
+	- Data is too big to include in packages
+	- Data can't fit in memory
+# Training demanding model issues:
+	- You are likely to need more powerful machines for training neural networks
+	- Consider using GPUs
+	
+
+## Key Learning Points
+- Even with Large datasets, you still need to think about reproducibility
+- Training in CI is more important and beneficial than ever with deep learning
+- Be sure to tune your machines , consider using GPUs
+- Reproducibility in Neural Networks has some particular challenges
+
+
+------------------------------------------------------------------------------------
+
+## Deployment of Machine Learning Models
+
+## Section 13.8 Notes - Packaging the CNN
+- Correct format for pushing (not the same as the PIP_EXTRA_INDEX_URL) larger packages to gemfury:
+- https://YOUR_TOKEN@push.fury.io/YOUR_USER_NAME/
+- Additional environment variables for CircleCI:
+- EPOCHS (set low to avoid running out of memory)
+- GEMFURY_PUSH_URL (see above)
+- KERAS_BACKEND (we use Theano in this course)
+- Links
+- Circle CI:
+- How to increase memory:
+https://discuss.circleci.com/t/increase-4g-memory-limit/9070/5
+- Using GPUs on Circle CI:
+https://circleci.com/docs/2.0/gpu/
+- Alternative resource classes
+https://circleci.com/docs/2.0/configuration-reference/#resource_class
+- AWS S3:
+https://aws.amazon.com/s3/
+
+## Section 13.9 Notes - Adding the CNN to the API
+- Links File Uploads in Flask:
+http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
+
+
+## Section 13.10 Notes - Common Issues
+- An area we have not covered in the lectures is generating artifacts in the CI. 
+- If you wish to persist the trained model between jobs, then you can use Circle CI artifacts:
+https://circleci.com/docs/2.0/artifacts/
+- Most CI platforms have a similar mechanism (often used for publishing test result reports).
+- How to increase memory:
+https://discuss.circleci.com/t/increase-4g-memory-limit/9070/5
+- Using GPUs on Circle CI:
+https://circleci.com/docs/2.0/gpu/
+- Alternative resource classes
+https://circleci.com/docs/2.0/configuration-reference/#resource_class
+- Running Keras models on a GPU:
+https://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu
+- Loading Keras datasets that do not fit in memory:
+https://keras.io/getting-started/faq/#how-can-i-use-keras-with-datasets-that-dont-fit-in
+-memory
+- Python Environment setup for deep learning on Windows 10:
+https://towardsdatascience.com/python-environment-setup-for-deep-learning-on-windows-10-c373786e36d1
+
+---------------------------------------------------------------------------------------------
+
+%----------------------------- Section 12: Common Issue found during deployment -------------------------------%
+
+
+
+
+
+
+%----------------------------- Section 13: Serving Model Via REST API -------------------------------%
+
+## REST API
+- Representational State Transfer
+
+## Serving our model via REST API allows us to:
+- Server predictions on the fly to multiple clients
+- Decouple our model development from client facing layer
+- Potentially combine multiple models at different API endpoints
+- Scale by adding more instances of the application behind a load balancer
+
+
+## Flask Overview
+- Build our using the flask micro framework
+- flask is popular Python microservices
+- Lightweight and flexible
+- Alternatives include: Django, Pyramid, Bottle, Sanic, Tornado, API Star amongst many others.
+
+
+## Monorepo example;
+
+https://github.com/facebook/react/tree/main/packages/react-client
+
+
+## Creating the API Skeleton
+
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api>pip install -r requirements.txt
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api>set FLASK_APP=run.py
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api>conda install markupsafe
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api>pip install markupsafe==2.0.0
+
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api> python run.py
+ * Serving Flask app "ml_api" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api> cls
+
+(MLDeploymentEnv) C:\Udemy_Course\Deploy_ML_Models\Projects\ml_api> python run.py
+ * Serving Flask app "ml_api" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [28/Apr/2025 20:01:42] "GET / HTTP/1.1" 404 -
+127.0.0.1 - - [28/Apr/2025 20:01:43] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [28/Apr/2025 20:01:51] "GET /health HTTP/1.1" 200 -
+
+
+http://localhost:5000/health
+
+-------------------------------------------------------------------------------------------
+
+7.2b - Note On Flask
+Quick note on Flask
+
+A tutorial on the Flask micro-framework is beyond the scope of this course.
+I would encourage you (if you're not already familiar with Flask) to browse some of the many free available resources for Flask.
+A few suggestions:
+
+Links Python decorator primer: https://realpython.com/primer-on-python-decorators/
+
+Getting started with Flask: http://flask.pocoo.org/docs/1.0/quickstart/
+
+Flask Mega tutorial: https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world
+
+Flask blueprints: http://flask.pocoo.org/docs/1.0/blueprints/
+
+Flask source code: https://github.com/pallets/flask (very readable!)
+
+Flask Web Development: Developing Web Applications with Python by Miguel Grinberg
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+>> git init
+>> git add README.md
+>> git commit -m "first commit"
+>> git branch -M RestAPI
+>> git remote add origin https://github.com/jnybrahma/Deploy_ML_Model.git
+>> git push -u origin RestAPI
+
+--------------------------------------------------------------------------------------------------------
+
+%------------------ Key Learning Points ------------------------------%
+
+- Make your API a thin layer
+- Validate inputs carefully (consider using a schema)
+- Log all key inputs and errors for reproducibility and debugging
+- Test your API
+
+
+---------------------------------------------------------------------------------------------------------
+
+https://www.trainindata.com/l/products
+
+
+
+
